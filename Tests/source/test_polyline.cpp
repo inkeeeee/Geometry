@@ -86,7 +86,27 @@ TEST(PolylineTest, MergeLines) {
     EXPECT_EQ(polyline1.get_point_name(3), 'D');
 }
 
-TEST(PolylineTest, MergeMoveLines) {
+TEST(PolylineTest, MergeLinesRealloc) {
+    Polyline<double> polyline1;
+    polyline1.add_point({0, 0, 0}, 'A');
+    polyline1.add_point({1, 1, 1}, 'B');
+    polyline1.add_point({2, 2, 12}, 'C');
+    
+    Polyline<double> polyline2;
+    polyline2.add_point({2, 2, 2}, 'D');
+    polyline2.add_point({3, 3, 3}, 'E');
+    polyline2.add_point({4, 4, 4}, 'F');
+    
+    polyline1.merge_line(polyline2);
+    EXPECT_EQ(polyline1.get_size(), 6);
+    EXPECT_EQ(polyline1.get_point_name(0), 'A');
+    EXPECT_EQ(polyline1.get_point_name(1), 'B');
+    EXPECT_EQ(polyline1.get_point_name(2), 'C');
+    EXPECT_EQ(polyline1.get_point_name(3), 'D');
+    EXPECT_EQ(polyline1.get_point_name(4), 'E');
+    EXPECT_EQ(polyline1.get_point_name(5), 'F');
+}
+TEST(PolylineTest, MergeMoveLinesInFirst) {
     Polyline<double> polyline1;
     polyline1.add_point({0, 0, 0}, 'A');
     polyline1.add_point({1, 1, 1}, 'B');
@@ -102,6 +122,57 @@ TEST(PolylineTest, MergeMoveLines) {
     EXPECT_EQ(polyline1.get_point_name(1), 'B');
     EXPECT_EQ(polyline1.get_point_name(2), 'C');
     EXPECT_EQ(polyline1.get_point_name(3), 'D');
+}
+
+TEST(PolylineTest, MergeMoveLinesInSecond) {
+    Polyline<double> polyline1;
+    polyline1.add_point({0, 0, 0}, 'A');
+    polyline1.add_point({1, 1, 1}, 'B');
+    polyline1.add_point({2, 2, 12}, 'C');
+    
+    Polyline<double> polyline2;
+    polyline2.add_point({2, 2, 2}, 'D');
+    polyline2.add_point({3, 3, 3}, 'E');
+    polyline2.add_point({4, 4, 4}, 'F');
+    polyline2.add_point({5, 5, 5}, 'G');
+    polyline2.add_point({6, 6, 6}, 'H');
+    polyline2.add_point({70, 70, 70}, 'I');
+
+    polyline2.remove_most_isolated_point(); //del I
+    
+    polyline1.merge_line(std::move(polyline2));
+    
+    EXPECT_EQ(polyline1.get_size(), 8);
+    EXPECT_EQ(polyline1.get_point_name(0), 'A');
+    EXPECT_EQ(polyline1.get_point_name(1), 'B');
+    EXPECT_EQ(polyline1.get_point_name(2), 'C');
+    EXPECT_EQ(polyline1.get_point_name(3), 'D');
+    EXPECT_EQ(polyline1.get_point_name(4), 'E');
+    EXPECT_EQ(polyline1.get_point_name(5), 'F');
+    EXPECT_EQ(polyline1.get_point_name(6), 'G');
+    EXPECT_EQ(polyline1.get_point_name(7), 'H');
+}
+
+TEST(PolylineTest, MergeMoveLinesRealloc) {
+    Polyline<double> polyline1;
+    polyline1.add_point({0, 0, 0}, 'A');
+    polyline1.add_point({1, 1, 1}, 'B');
+    polyline1.add_point({2, 2, 12}, 'C');
+    
+    Polyline<double> polyline2;
+    polyline2.add_point({2, 2, 2}, 'D');
+    polyline2.add_point({3, 3, 3}, 'E');
+    polyline2.add_point({4, 4, 4}, 'F');
+    
+    polyline1.merge_line(std::move(polyline2));
+    
+    EXPECT_EQ(polyline1.get_size(), 6);
+    EXPECT_EQ(polyline1.get_point_name(0), 'A');
+    EXPECT_EQ(polyline1.get_point_name(1), 'B');
+    EXPECT_EQ(polyline1.get_point_name(2), 'C');
+    EXPECT_EQ(polyline1.get_point_name(3), 'D');
+    EXPECT_EQ(polyline1.get_point_name(4), 'E');
+    EXPECT_EQ(polyline1.get_point_name(5), 'F');
 }
 
 // Тесты вычисления длины

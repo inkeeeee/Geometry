@@ -1,4 +1,4 @@
-#include "CommandInterface.hpp"
+#include "CommandInterface/CommandInterface.hpp"
 #include <iostream>
 #include <sstream>
 #include <cmath>

@@ -2,7 +2,7 @@
 #define GEOM_POLYLINE_HPP
 
 #include "Vector.hpp"
-
+#include <iostream>
 /**
  * @brief 3D polyline with named points
  * @tparam T Numeric type for point coordinates
@@ -179,12 +179,30 @@ public:
     void merge_line(Polyline&& other) {
         if (other.size == 0) return;
 
-        if (capacity < size + other.size)
-            reallocate(capacity + other.size);
+        if (capacity >= size + other.size) {
+            std::move(other.begin(), other.end(), end());
+            std::move(other.names_begin(), other.names_end(), names_end());
+            size += other.size;
+            return;
+        }
         
+        if (other.capacity >= size + other.size) {
+            std::move_backward(other.begin(), other.end(), other.begin() + size + other.size);
+            std::move_backward(other.names_begin(), other.names_end(), other.names_begin() + size + other.size);
+            
+            std::move(begin(), end(), other.begin());
+            std::move(names_begin(), names_end(), other.names_begin());
+            
+            swap(*this, other);
+            size += other.size;
+            return;
+        }
+        
+        reallocate(size + other.size);
         std::move(other.begin(), other.end(), end());
-        std::move(other.names, other.names + other.size, names + size);
+        std::move(other.names_begin(), other.names_end(), names_end());
         size += other.size;
+        
     }
 
     /// @brief Remove the point that is most isolated from its neighbors

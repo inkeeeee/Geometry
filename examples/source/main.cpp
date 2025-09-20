@@ -18,6 +18,17 @@ int main() {
 
     std::cout << "=== Анимация объемной 3D звезды ===" << std::endl;
 
+
+    const double an = 40.0 * M_PI / 180.0;
+    const double cos_ = cos(an);
+    const double sin_ = sin(an);
+    
+    RectangularMatrix<double, 3, 2> projection_matrix = {
+        1.0,   0.0,    // X проекция
+        cos_, -sin_,  // Y проекция
+        0.0,   -1.0    // Z проекция
+    };
+
     // Упрощенная проекционная матрица для лучшего отображения
     RectangularMatrix<double, 3, 2> perspective_proj = {
         1.0, 0.0,
@@ -25,7 +36,7 @@ int main() {
         0.0, 0.0
     };
 
-    SpatialBuffer<double, 120, 120> buffer(perspective_proj);
+    SpatialBuffer<double, 120, 120> buffer(projection_matrix);
     
     // Исходные параметры звезды - УВЕЛИЧЕНО В 2 РАЗА
     const double outer_radius = 20;  // было 10
@@ -72,10 +83,17 @@ int main() {
         base_points.push_back(top_point);
         base_symbols.push_back(base_symbols[i] + 32);
     }
+    
+    
+    Polyline<double> star;
+    for (size_t i = 0; i < base_points.size(); ++i) {
+        const auto& p = base_points[i];    
+        star.add_point(p, base_symbols[i]);
+    }
 
     for (int frame = 0; frame < frames; ++frame) {
         buffer.clear();
-        Polyline<double> star;
+        /*Polyline<double> star;
         
         double current_angle = frame * rotation_step;
         double current_fall = frame * fall_step;
@@ -97,15 +115,14 @@ int main() {
             };
             
             star.add_point(transformed, base_symbols[i]);
-        }
-        
-        star.remove_most_isolated_point();
+        }*/
         buffer << star;
         std::cout << "\033[2J\033[H"; // Очистка экрана (для Unix-like систем)
         std::cout << "Кадр " << frame + 1 << "/" << frames << std::endl;
         std::cout << buffer;
         
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        star.rotate({0, 0, 1}, M_PI/18);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
     return 0;

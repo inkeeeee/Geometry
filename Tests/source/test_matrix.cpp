@@ -68,6 +68,8 @@ TEST(RectangularMatrixTest, MixedTypeMultiplication) {
     EXPECT_DOUBLE_EQ(result.at(0, 1), 1*2.5 + 2*4.5);
     EXPECT_DOUBLE_EQ(result.at(1, 0), 3*1.5 + 4*3.5);
     EXPECT_DOUBLE_EQ(result.at(1, 1), 3*2.5 + 4*4.5);
+    EXPECT_DOUBLE_EQ(result.get_rows(), 2);
+    EXPECT_DOUBLE_EQ(result.get_columns(), 2);
 }
 
 // Тесты транспонирования
